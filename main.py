@@ -126,7 +126,7 @@ def replace_indexes(df):
         17: "Odessa",
         18: "Poltava",
         19: "Rivne",
-        20: "Sevastopol'",
+        20: "Sevastopol",
         21: "Sumy",
         22: "Ternopil'",
         23: "Transcarpathia",

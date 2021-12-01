@@ -285,4 +285,4 @@ path = r'C:\Users\Ostap\PycharmProjects\Lab2\data\\'
 res_df = create_dataframe(path)
 
 app = NoaaDataVisualization()
-app.launch(port=9093)
+app.launch()

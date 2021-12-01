@@ -268,9 +268,9 @@ def specific_area_severe_drought_years(area, df):
 
 
 def create_dataframe(path):
-    # clean_folder(path)
-    # for i in range(1, 28):
-    #     download_data_region(i, path)
+    clean_folder(path)
+    for i in range(1, 28):
+        download_data_region(i, path)
 
     df = write_to_dataframe(path)
     new_df = replace_indexes(df)

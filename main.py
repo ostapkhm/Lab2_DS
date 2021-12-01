@@ -69,29 +69,44 @@ class NoaaDataVisualization(server.App):
                "action_id": "update_data"}]
 
     controls = [{"type": "hidden",
-                 "id": "update_data"}]
+                  "id": "update_data"}]
 
-    tabs = ["Plot"]
+    tabs = ["Plot", "Table"]
 
-    outputs = [{"type": "plot",
-                "id": "plot",
+    outputs = [{"type": "table",
+                "id": "table_id",
                 "control_id": "update_data",
-                "tab": "Plot",
-                "on_page_load": True}]
+                "tab": "Table",
+                "on_page_load": True},
+               {"type": "plot",
+                "id": "plot_id",
+                "control_id": "update_data",
+                "tab": "Plot"}]
 
     def getData(self, params):
         # get values from input
         area = params['ticker1']
-        noaa_data = params['ticker2']
         range_months = self.getHTML(params)
         year = params['ticker3']
 
         months_arr_range = parse_to_months(range_months)
         weeks_arr = months_to_weeks(months_arr_range)
 
-        new_df = res_df[(res_df.area == area) & (res_df.week.isin(weeks_arr)) & (res_df.year == int(year))]
-        new_df = new_df.set_index('week')
-        return new_df[noaa_data]
+        new_df = res_df[(res_df.area == area) &
+                        (res_df.week.isin(weeks_arr)) & (res_df.year == int(year))]
+
+        return new_df
+
+    def getPlot(self, params):
+        # get values from input
+        noaa_data = params['ticker2']
+
+        df = self.getData(params)[noaa_data]
+        plt_obj = df.plot()
+        plt_obj.set_xlabel("week")
+        plt_obj.set_title(noaa_data)
+        fig = plt_obj.get_figure()
+        return fig
 
     def getHTML(self, params):
         range_months = params['range']
@@ -116,8 +131,6 @@ def parse_to_months(string):
 
     month1 = int(string[0: idx])
     month2 = int(string[idx+1:])
-    print(month1)
-    print(month2)
     return month1, month2
 
 

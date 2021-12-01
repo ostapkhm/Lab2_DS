@@ -94,20 +94,19 @@ class NoaaDataVisualization(server.App):
 
         new_df = res_df[(res_df.area == area) &
                         (res_df.week.isin(weeks_arr)) & (res_df.year == int(year))]
+
         return new_df
 
     def getPlot(self, params):
         # get values from input
         noaa_data = params['ticker2']
-        print(noaa_data)
 
-        df = self.getData(params).set_index('week').drop(['year', 'SMN', 'SMT', 'area'], axis=1)[noaa_data]
-
+        df = self.getData(params).set_index('week')
+        df = df[noaa_data]
         plt_obj = df.plot()
         plt_obj.set_xlabel("week")
         plt_obj.set_title(noaa_data)
         fig = plt_obj.get_figure()
-        print(type(fig))
         return fig
 
     def getHTML(self, params):
@@ -159,14 +158,12 @@ def months_to_weeks(months_arr):
         start += month_to_week[i]
 
     end = 0
-    for i in range(1, month2):
+    for i in range(1, month2 + 1):
         end += month_to_week[i]
 
     return [i for i in range(start, end + 1)]
 
-# ---------------------------------------------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------------------------------------------
 def clean_folder(path):
     filenames = os.listdir(path)
     for filename in filenames:
@@ -285,4 +282,4 @@ path = r'C:\Users\Ostap\PycharmProjects\Lab2\data\\'
 res_df = create_dataframe(path)
 
 app = NoaaDataVisualization()
-app.launch()
+app.launch(port=2081)

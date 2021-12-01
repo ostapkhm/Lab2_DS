@@ -39,6 +39,14 @@ class NoaaDataVisualization(server.App):
                            {"label": "Zhytomyr", "value": "Zhytomyr"},
                            {"label": "Donets'k", "value": "Donets'k"}],
                "key": 'ticker1',
+               "action_id": "update_data"},
+
+              {"type": 'dropdown',
+               "label": 'NOAA data dropdown',
+               "options": [{"label": "VCI", "value": "VCI"},
+                           {"label": "TCI", "value": "TCI"},
+                           {"label": "VHI", "value": "VHI"}],
+               "key": 'ticker2',
                "action_id": "update_data"}]
 
     controls = [{"type": "hidden",
@@ -53,9 +61,9 @@ class NoaaDataVisualization(server.App):
                 "on_page_load": True}]
 
     def getData(self, params):
-        # get only VHI
         area = params['ticker1']
-        return res_df[(res_df.area == area)]['VHI']
+        noaa_data = params['ticker2']
+        return res_df[(res_df.area == area)][noaa_data]
 
 
 def clean_folder(path):
@@ -177,4 +185,3 @@ res_df = create_dataframe(path)
 
 app = NoaaDataVisualization()
 app.launch(port=9093)
-

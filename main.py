@@ -99,12 +99,15 @@ class NoaaDataVisualization(server.App):
     def getPlot(self, params):
         # get values from input
         noaa_data = params['ticker2']
+        print(noaa_data)
 
-        df = self.getData(params)[noaa_data]
+        df = self.getData(params).set_index('week').drop(['year', 'SMN', 'SMT', 'area'], axis=1)[noaa_data]
+
         plt_obj = df.plot()
         plt_obj.set_xlabel("week")
         plt_obj.set_title(noaa_data)
         fig = plt_obj.get_figure()
+        print(type(fig))
         return fig
 
     def getHTML(self, params):

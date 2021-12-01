@@ -47,8 +47,13 @@ class NoaaDataVisualization(server.App):
                            {"label": "TCI", "value": "TCI"},
                            {"label": "VHI", "value": "VHI"}],
                "key": 'ticker2',
-               "action_id": "update_data"}]
+               "action_id": "update_data"},
 
+              {"type": 'text',
+               "key": 'range',
+               "label": 'date-ranges: month1-month2',
+               "value": '9-10',
+               "action_id": 'simple_html_output'}]
     controls = [{"type": "hidden",
                  "id": "update_data"}]
 
@@ -63,7 +68,66 @@ class NoaaDataVisualization(server.App):
     def getData(self, params):
         area = params['ticker1']
         noaa_data = params['ticker2']
-        return res_df[(res_df.area == area)][noaa_data]
+
+        # get months from input
+        range_months = self.getHTML(params)
+        print(range_months)
+        months_arr_range = parse_to_months(range_months)
+        weeks_arr = months_to_weeks(months_arr_range)
+
+        new_df = res_df[(res_df.area == area) & (res_df.week.isin(weeks_arr)) & (res_df.year == 2000)]
+        new_df = new_df.set_index('week')
+        print(new_df)
+        return new_df[noaa_data]
+
+    def getHTML(self, params):
+        range_months = params['range']
+        return range_months
+
+
+def parse_to_months(string):
+    # assume valid input month1 and month2
+    # month1 < month2
+
+    for i in range(0, len(string)):
+        if string[i] == '-':
+            idx = i
+            break
+
+    month1 = int(string[0:idx])
+    month2 = int(string[idx+1:])
+    print(month1)
+    print(month2)
+    return month1, month2
+
+
+def months_to_weeks(months_arr):
+    # simplifed model of calendar(only 52 weeks)
+
+    month_to_week = {1:  4,
+                     2:  4,
+                     3:  5,
+                     4:  4,
+                     5:  4,
+                     6:  5,
+                     7:  4,
+                     8:  4,
+                     9:  5,
+                     10: 4,
+                     11: 4,
+                     12: 5}
+
+    month1, month2 = months_arr
+
+    start = 0
+    for i in range(1, month1):
+        start += month_to_week[i]
+
+    end = 0
+    for i in range(1, month2):
+        end += month_to_week[i]
+
+    return [i for i in range(start, end + 1)]
 
 
 def clean_folder(path):

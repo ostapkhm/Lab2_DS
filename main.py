@@ -3,6 +3,60 @@ import urllib.request
 from datetime import datetime
 import os
 
+from spyre import server
+
+
+class NoaaDataVisualization(server.App):
+    title = "Noaa Data Visualization"
+
+    inputs = [{"type": 'dropdown',
+               "label": 'Area dropdown',
+               "options": [{"label": "Cherkasy", "value": "Cherkasy"},
+                           {"label": "Chernihiv", "value": "Chernihiv"},
+                           {"label": "Chernivtsi", "value": "Chernivtsi"},
+                           {"label": "Crimea", "value": "Crimea"},
+                           {"label": "Dnipropetrovs'k", "value": "Dnipropetrovs'k"},
+                           {"label": "Ivano-Frankivs'k", "value": "Ivano-Frankivs'k"},
+                           {"label": "Kharkiv", "value": "Kharkiv"},
+                           {"label": "Kherson", "value": "Kherson"},
+                           {"label": "Khmel'nyts'kyy", "value": "Khmel'nyts'kyy"},
+                           {"label": "Kiev", "value": "Kiev"},
+                           {"label": "Kiev City", "value": "Kiev City"},
+                           {"label": "Kirovohrad", "value": "Kirovohrad"},
+                           {"label": "Luhans'k", "value": "Luhans'k"},
+                           {"label": "L'viv", "value": "L'viv"},
+                           {"label": "Mykolayiv", "value": "Mykolayiv"},
+                           {"label": "Odessa", "value": "Odessa"},
+                           {"label": "Poltava", "value": "Poltava"},
+                           {"label": "Rivne", "value": "Rivne"},
+                           {"label": "Sevastopol", "value": "Sevastopol"},
+                           {"label": "Sumy", "value": "Sumy"},
+                           {"label": "Ternopil", "value": "Ternopil"},
+                           {"label": "Transcarpathia", "value": "Transcarpathia"},
+                           {"label": "Vinnytsya", "value": "Vinnytsya"},
+                           {"label": "Volyn", "value": "Volyn"},
+                           {"label": "Zaporizhzhya", "value": "Zaporizhzhya"},
+                           {"label": "Zhytomyr", "value": "Zhytomyr"},
+                           {"label": "Donets'k", "value": "Donets'k"}],
+               "key": 'ticker1',
+               "action_id": "update_data"}]
+
+    controls = [{"type": "hidden",
+                 "id": "update_data"}]
+
+    tabs = ["Plot"]
+
+    outputs = [{"type": "plot",
+                "id": "plot",
+                "control_id": "update_data",
+                "tab": "Plot",
+                "on_page_load": True}]
+
+    def getData(self, params):
+        # get only VHI
+        area = params['ticker1']
+        return res_df[(res_df.area == area)]['VHI']
+
 
 def clean_folder(path):
     filenames = os.listdir(path)
@@ -109,17 +163,18 @@ def specific_area_severe_drought_years(area, df):
 
 
 def create_dataframe(path):
-    clean_folder(path)
-    for i in range(1, 28):
-        download_data_region(i, path)
+    # clean_folder(path)
+    # for i in range(1, 28):
+    #     download_data_region(i, path)
 
     df = write_to_dataframe(path)
     new_df = replace_indexes(df)
     return new_df
 
 
-path = r'C:\Users\Ostap\PycharmProjects\Lab2\data\\'
+path = r'C:\Users\Ostap\PycharmProjects\Lab1\data\\'
 res_df = create_dataframe(path)
 
-
+app = NoaaDataVisualization()
+app.launch(port=9093)
 

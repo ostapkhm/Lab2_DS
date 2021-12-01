@@ -6,6 +6,13 @@ import os
 from spyre import server
 
 
+def create_options():
+    res = []
+    for year in range(1981, 2022):
+        res.append({"label": year, "value": year})
+    return res
+
+
 class NoaaDataVisualization(server.App):
     title = "Noaa Data Visualization"
 
@@ -53,7 +60,14 @@ class NoaaDataVisualization(server.App):
                "key": 'range',
                "label": 'date-ranges: month1-month2',
                "value": '9-10',
-               "action_id": 'simple_html_output'}]
+               "action_id": 'simple_html_output'},
+
+              {"type": 'dropdown',
+               "label": 'year dropdown',
+               "options": create_options(),
+               "key": "ticker3",
+               "action_id": "update_data"}]
+
     controls = [{"type": "hidden",
                  "id": "update_data"}]
 
@@ -66,23 +80,29 @@ class NoaaDataVisualization(server.App):
                 "on_page_load": True}]
 
     def getData(self, params):
+        # get values from input
         area = params['ticker1']
         noaa_data = params['ticker2']
-
-        # get months from input
         range_months = self.getHTML(params)
-        print(range_months)
+        year = params['ticker3']
+
         months_arr_range = parse_to_months(range_months)
         weeks_arr = months_to_weeks(months_arr_range)
 
-        new_df = res_df[(res_df.area == area) & (res_df.week.isin(weeks_arr)) & (res_df.year == 2000)]
+        new_df = res_df[(res_df.area == area) & (res_df.week.isin(weeks_arr)) & (res_df.year == int(year))]
         new_df = new_df.set_index('week')
-        print(new_df)
         return new_df[noaa_data]
 
     def getHTML(self, params):
         range_months = params['range']
         return range_months
+
+
+def create_options(df):
+    res = []
+    for year in df.year:
+        res.append({"label": year, "value": year})
+    return res
 
 
 def parse_to_months(string):
@@ -94,7 +114,7 @@ def parse_to_months(string):
             idx = i
             break
 
-    month1 = int(string[0:idx])
+    month1 = int(string[0: idx])
     month2 = int(string[idx+1:])
     print(month1)
     print(month2)

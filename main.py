@@ -94,7 +94,6 @@ class NoaaDataVisualization(server.App):
 
         new_df = res_df[(res_df.area == area) &
                         (res_df.week.isin(weeks_arr)) & (res_df.year == int(year))]
-
         return new_df
 
     def getPlot(self, params):
@@ -162,7 +161,9 @@ def months_to_weeks(months_arr):
 
     return [i for i in range(start, end + 1)]
 
+# ---------------------------------------------------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------------------------------------------------
 def clean_folder(path):
     filenames = os.listdir(path)
     for filename in filenames:
@@ -277,7 +278,7 @@ def create_dataframe(path):
     return new_df
 
 
-path = r'C:\Users\Ostap\PycharmProjects\Lab1\data\\'
+path = r'C:\Users\Ostap\PycharmProjects\Lab2\data\\'
 res_df = create_dataframe(path)
 
 app = NoaaDataVisualization()
